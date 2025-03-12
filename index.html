@@ -38,7 +38,14 @@
 				labelDom.innerText=auteur[num] + "  -  " + titre[num];
 			}else{
 				inputDom.value="0";
-				labelDom.innerText=auteur[getRandomInt(10)] + "  -  " + titre[getRandomInt(10)];
+				
+				a=getRandomInt(10);
+				t=getRandomInt(10);
+				while( a==num && t ==num){
+					a=getRandomInt(10);
+					t=getRandomInt(10);
+				}
+				labelDom.innerText=auteur[a] + "  -  " + titre[t];
 			}
 		}
 	}
