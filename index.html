@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="fr">
+<script>
+	const auteur = ["HAENDEL", "DVORAK", "COUPERIN", "PACHELBEL", "BIZET", "BREL", "MADONNA", "BACHELET", "STROMAE", "THE GREATEST SHOWMAN" ];
+	const titre = ["Xerxe`s (aria Ombra mai fu)", "Symphonie n9 - Mouvement 4 (Allegro con fuoco)", "Les Barricades Mysterieuses", 
+	"Canon en Re majeur", "Carmen - ( Habanera, L'amour est un oiseau rebelle)", "Quand on a que l'Amour", "Frozen", "Les corons", "Carmen", "From Now On" ];
+	const random = generateRandomList();
+	currentSong = 0;
+		
+	function loadFile( num ){
+		const audioPlayer = document.getElementById('audioPlayer');
+		audioPlayer.src = "./" + num + ".mp3";
+		audioPlayer.play();
+	}
+	
+	function generateRandomList() {
+		const numbers = Array.from({ length: 10 }, (_, i) => i); // Crée un tableau [0,1,2,...,9]
+		for (let i = numbers.length - 1; i > 0; i--) {
+			const j = Math.floor(Math.random() * (i + 1)); // Génère un index aléatoire
+			[numbers[i], numbers[j]] = [numbers[j], numbers[i]]; // Échange les valeurs
+		}
+		return (numbers);
+	}
+	
+	function getRandomInt(max) {
+	  return Math.floor(Math.random() * max);
+	}
+
+	function loadForm(num){
+		good = getRandomInt(10)+1;
+		for (let i = 1; i <=10; i++) {			
+			labelDom = document.getElementById('label' + i);
+			inputDom = document.getElementById('choix' + i);
+			inputDom.checked = false;
+			inputDom.parentElement.style.background='';
+			if( i==good){
+				inputDom.value="1";
+				labelDom.innerText=auteur[num] + "  -  " + titre[num];
+			}else{
+				inputDom.value="0";
+				labelDom.innerText=auteur[getRandomInt(10)] + "  -  " + titre[getRandomInt(10)];
+			}
+		}
+	}
+	
+	function next(){
+		if( currentSong <10 ){
+			toLoad = random[currentSong]+1;
+			console.log("Loading song number " + toLoad);
+			loadFile(toLoad);
+			loadForm(toLoad-1);
+		}
+		else
+		{
+			console.log("END");
+		}
+	}
+	
+	function updateButton(e) {		
+		console.log("Je valide");
+		e.preventDefault();
+		const formUser = e.target;
+		const checkedInput = [...formUser.elements]
+		.filter((input) => input.checked) // Here you filter the inputs to get the checked value
+		
+		if (checkedInput.length>0){
+			if(checkedInput[0].value ==1){
+				checkedInput[0].parentElement.style.background='green';
+				createSquare("green");
+			}else{
+				checkedInput[0].parentElement.style.background='red';
+				createSquare("red");
+				showGoodAnswer();
+			}
+			document.getElementById('next').style.display='inline';
+			document.getElementById('validate').style.display='none';
+		}else{
+			console.log("Nothing");
+		}
+	}
+	
+	function suivant(){
+		document.getElementById('next').style.display='none';
+		document.getElementById('validate').style.display='inline';
+		currentSong++;
+		next();	
+	}
+	
+	function showGoodAnswer(){
+		for (let i = 1; i <=10; i++) {			
+			inputDom = document.getElementById('choix' + i);
+			if( inputDom.value == 1 ){
+				inputDom.parentElement.style.background='green';
+			}
+		}		
+	}
+	
+	function createSquare(color){
+		const canvas = document.createElement("canvas");
+		canvas.width = 40;
+		canvas.height = 40;
+		document.body.appendChild(canvas);
+
+		// Get the canvas drawing context
+		const ctx = canvas.getContext("2d");
+
+		// Draw a square
+		ctx.fillStyle = color; // Set square color
+		ctx.fillRect(0, 10, 20, 20); // Draw square at (100,100) with 200x200 size
+	}
+	
+	addEventListener("load", (event) => {});
+	onload = (event) => {	
+		console.log("La page est complètement chargée");
+		next();
+	};
+		
+
+</script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="styles.css">
+    <title>Playlist 4</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        .player {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Playlist 4</h2>
+    <div class="player">
+        <audio id="audioPlayer" controls>
+            Votre navigateur ne supporte pas l'élément audio.
+        </audio>
+    </div>
+	<form method="dialog" id="form-song" onsubmit="updateButton(event);">	
+		<fieldset>	
+		  <legend>Quelle est cette musique : </legend>
+		  <div class="song">
+			<input type="radio" id="choix1" value="0" name="drone" />
+			<label id="label1" for="choix1">Choix 1</label>
+		  </div>
+		  <div class="song">
+			<input type="radio" id="choix2" value="0" name="drone" />
+			<label id="label2" for="choix2">Choix 2</label>
+		  </div>
+		  <div class="song">
+			<input type="radio" id="choix3" value="0" name="drone" />
+			<label id="label3" for="choix3">Choix 3</label>
+		  </div>
+		  <div class="song">
+			<input type="radio" id="choix4" value="0" name="drone" />
+			<label id="label4" for="choix4">Choix 4</label>
+		  </div>
+		  <div class="song">
+			<input type="radio" id="choix5" value="0" name="drone" />
+			<label id="label5" for="choix5">Choix 5</label>
+		  </div>
+		  <div class="song">
+			<input type="radio" id="choix6" value="0" name="drone" />
+			<label id="label6" for="choix6">Choix 6</label>
+		  </div>
+		  <div class="song">
+			<input type="radio" id="choix7" value="0" name="drone" />
+			<label id="label7" for="choix7">Choix 7</label>
+		  </div>
+		  <div class="song">
+			<input type="radio" id="choix8" value="0" name="drone" />
+			<label id="label8" for="choix8">Choix 8</label>
+		  </div>
+		  <div class="song">
+			<input type="radio" id="choix9" value="0" name="drone" />
+			<label id="label9" for="choix9">Choix 9</label>
+		  </div>
+		  <div class="song">
+			<input type="radio" id="choix10" value="0" name="drone" />
+			<label id="label10" for="choix10">Choix 10</label>
+		  </div>	  
+		  <input type="submit" id="validate" value="Valider" />
+		  <input type="button" id="next" value="Suivant" style="display:none;" onclick="suivant();"/>
+		</fieldset>
+	</form>
+</body>
+</html>
+
+<!--
+1 - HAENDEL - Xerxe`s (aria Ombra mai fu) 
+2 - DVORAK - Symphonie n°9 - Mouvement 4 (Allegro con fuoco)
+3 - COUPERIN - Les Barricades Myste´rieuses 
+4 - PACHELBEL - Canon en Re´ majeur
+5 - BIZET - Carmen - ( Habanera _ L'amour est un oiseau rebelle)
+6 - BREL - Quand on na que l'Amour
+7 - MADONNA - Frozen
+8 - BACHELET - Les corons 
+9 - STROMAE - Carmen
+10- The Greatest Showman (musique de Benj Pasek et Justin Paul) - From Now On 
+-->
