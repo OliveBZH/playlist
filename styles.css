@@ -5,7 +5,9 @@ h1 {
   color: blue;
 }
 p {
-  color: red;
+  color: black;
+  font-size:16px;
+  font-weight:bold;
 }
 
 fieldset {
