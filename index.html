@@ -1,219 +1,261 @@
 <!DOCTYPE html>
 <html lang="fr">
-<script>
-	const auteur = ["HAENDEL", "DVORAK", "COUPERIN", "PACHELBEL", "BIZET", "BREL", "MADONNA", "BACHELET", "STROMAE", "THE GREATEST SHOWMAN" ];
-	const titre = ["Xerxe`s (aria Ombra mai fu)", "Symphonie n9 - Mouvement 4 (Allegro con fuoco)", "Les Barricades Mysterieuses", 
-	"Canon en Re majeur", "Carmen - ( Habanera, L'amour est un oiseau rebelle)", "Quand on a que l'Amour", "Frozen", "Les corons", "Carmen", "From Now On" ];
-	const random = generateRandomList();
-	currentSong = 0;
-	score = 0;
-		
-	function loadFile( num ){
-		const audioPlayer = document.getElementById('audioPlayer');
-		audioPlayer.src = "./" + num + ".mp3";
-		audioPlayer.play();
-	}
-	
-	function generateRandomList() {
-		const numbers = Array.from({ length: 10 }, (_, i) => i); // Crée un tableau [0,1,2,...,9]
-		for (let i = numbers.length - 1; i > 0; i--) {
-			const j = Math.floor(Math.random() * (i + 1)); // Génère un index aléatoire
-			[numbers[i], numbers[j]] = [numbers[j], numbers[i]]; // Échange les valeurs
-		}
-		return (numbers);
-	}
-	
-	function getRandomInt(max) {
-	  return Math.floor(Math.random() * max);
-	}
-
-	function loadForm(num){
-		good = getRandomInt(10)+1;
-		for (let i = 1; i <=10; i++) {			
-			labelDom = document.getElementById('label' + i);
-			inputDom = document.getElementById('choix' + i);
-			inputDom.checked = false;
-			inputDom.parentElement.style.background='';
-			if( i==good){
-				inputDom.value="1";
-				labelDom.innerText=auteur[num] + "  -  " + titre[num];
-			}else{
-				inputDom.value="0";
-				
-				a=getRandomInt(10);
-				t=getRandomInt(10);
-				while( a==num && t ==num){
-					a=getRandomInt(10);
-					t=getRandomInt(10);
-				}
-				labelDom.innerText=auteur[a] + "  -  " + titre[t];
-			}
-		}
-	}
-	
-	function next(){
-		if( currentSong<10 ){
-			toLoad = random[currentSong]+1;
-			console.log("Loading song number " + toLoad);
-			loadFile(toLoad);
-			loadForm(toLoad-1);
-		}
-		else
-		{
-			console.log("END");
-			document.getElementById('next').style.display='none';
-			document.getElementById('validate').style.display='none';
-			document.getElementById('score').innerText = "Votre Score: " + score + "/10";
-			document.getElementById('score').style.display='inline';
-		}
-	}
-	
-	function updateButton(e) {		
-		console.log("Je valide");
-		e.preventDefault();
-		const formUser = e.target;
-		const checkedInput = [...formUser.elements]
-		.filter((input) => input.checked) // Here you filter the inputs to get the checked value
-		
-		if (checkedInput.length>0){
-			if(checkedInput[0].value ==1){
-				score++;
-				checkedInput[0].parentElement.style.background='green';
-				createSquare("green");
-			}else{
-				checkedInput[0].parentElement.style.background='red';
-				createSquare("red");
-				showGoodAnswer();
-			}
-			document.getElementById('next').style.display='inline';
-			document.getElementById('validate').style.display='none';
-		}else{
-			console.log("Nothing");
-		}
-	}
-	
-	function suivant(){
-		document.getElementById('next').style.display='none';
-		document.getElementById('validate').style.display='inline';
-		currentSong++;
-		next();
-	}
-	
-	function showGoodAnswer(){
-		for (let i = 1; i <=10; i++) {			
-			inputDom = document.getElementById('choix' + i);
-			if( inputDom.value == 1 ){
-				inputDom.parentElement.style.background='green';
-			}
-		}		
-	}
-	
-	function createSquare(color){
-		const canvas = document.createElement("canvas");
-		canvas.width = 40;
-		canvas.height = 40;
-		document.body.appendChild(canvas);
-
-		// Get the canvas drawing context
-		const ctx = canvas.getContext("2d");
-
-		// Draw a square
-		ctx.fillStyle = color; // Set square color
-		ctx.fillRect(0, 10, 20, 20); // Draw square at (100,100) with 200x200 size
-	}
-	
-	addEventListener("load", (event) => {});
-	onload = (event) => {	
-		console.log("La page est complètement chargée");
-		next();
-	};
-		
-
-</script>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="styles.css">
-    <title>Playlist 4</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-			font-size:12px;
-            text-align: center;
-            margin: 0px;
-        }
-        .player {
-            margin-top: 0px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <title>Playlist 4</title>
 </head>
 <body>
-    <h2>Playlist 4</h2>
-    <div class="player">
-        <audio id="audioPlayer" controls>
-            Votre navigateur ne supporte pas l'élément audio.
+  <main class="app" aria-live="polite">
+    <section class="quiz-shell">
+      <header class="quiz-header">
+        <div>
+          <p class="eyebrow">Quiz musical</p>
+          <h1>Playlist 4</h1>
+        </div>
+        <div class="score-box">
+          <span id="progress">1 / 10</span>
+          <strong id="score">0 point</strong>
+        </div>
+      </header>
+
+      <section class="player-panel">
+        <p id="instruction">Ã‰coutez l'extrait, puis choisissez le bon auteur et le bon titre.</p>
+        <audio id="audioPlayer" controls preload="metadata">
+          Votre navigateur ne supporte pas l'Ã©lÃ©ment audio.
         </audio>
-    </div>
-	<form method="dialog" id="form-song" onsubmit="updateButton(event);">	
-		<fieldset>	
-		  <legend>Quelle est cette musique : </legend>
-		  <div class="song">
-			<input type="radio" id="choix1" value="0" name="drone" />
-			<label id="label1" for="choix1">Choix 1</label>
-		  </div>
-		  <div class="song">
-			<input type="radio" id="choix2" value="0" name="drone" />
-			<label id="label2" for="choix2">Choix 2</label>
-		  </div>
-		  <div class="song">
-			<input type="radio" id="choix3" value="0" name="drone" />
-			<label id="label3" for="choix3">Choix 3</label>
-		  </div>
-		  <div class="song">
-			<input type="radio" id="choix4" value="0" name="drone" />
-			<label id="label4" for="choix4">Choix 4</label>
-		  </div>
-		  <div class="song">
-			<input type="radio" id="choix5" value="0" name="drone" />
-			<label id="label5" for="choix5">Choix 5</label>
-		  </div>
-		  <div class="song">
-			<input type="radio" id="choix6" value="0" name="drone" />
-			<label id="label6" for="choix6">Choix 6</label>
-		  </div>
-		  <div class="song">
-			<input type="radio" id="choix7" value="0" name="drone" />
-			<label id="label7" for="choix7">Choix 7</label>
-		  </div>
-		  <div class="song">
-			<input type="radio" id="choix8" value="0" name="drone" />
-			<label id="label8" for="choix8">Choix 8</label>
-		  </div>
-		  <div class="song">
-			<input type="radio" id="choix9" value="0" name="drone" />
-			<label id="label9" for="choix9">Choix 9</label>
-		  </div>
-		  <div class="song">
-			<input type="radio" id="choix10" value="0" name="drone" />
-			<label id="label10" for="choix10">Choix 10</label>
-		  </div>	  
-		  <input type="submit" id="validate" value="Valider" />
-		  <input type="button" id="next" value="Suivant" style="display:none;" onclick="suivant();"/>
-		  <p id="score" style="display:none;">Votre Score : 8/10</p>
-		</fieldset>
-	</form>
+      </section>
+
+      <form id="quizForm" class="choices" autocomplete="off">
+        <fieldset>
+          <legend>Quelle est cette musique ?</legend>
+          <div id="answers" class="answers"></div>
+        </fieldset>
+
+        <div class="actions">
+          <button type="submit" id="validate">Valider</button>
+          <button type="button" id="next" class="secondary" hidden>Suivant</button>
+          <button type="button" id="restart" class="secondary" hidden>Rejouer</button>
+        </div>
+      </form>
+
+      <p id="feedback" class="feedback" role="status"></p>
+      <div id="history" class="history" aria-label="RÃ©sultats des rÃ©ponses"></div>
+    </section>
+  </main>
+
+  <script>
+    const auteur = [
+		"ALLEGRI", 
+		"FAURÃ‰", 
+		"GRIEG", 
+		"RACHMANINOV", 
+		"JOHANN STRAUSS", 
+		"WAGNER", 
+		"BACH", 
+		"BEETHOVEN", 
+		"AMY WINEHOUSE", 
+		"ALAIN SOUCHON", 
+		"CHUCK BERRY",
+		"THE STROKES",
+		"COLDPLAY",
+		"DJANGO REINHARDT",
+		"Feu! Chatterton",
+		"BB King"
+	   ];
+    const titre = [
+      "Miserere",
+	  "Requiem, Pie Jesu",
+	  "Peer Gynt, Dans lâ€™antre du Roi de la montagne",
+	  "Symphonie nÂ°1, Grave, Allegro ma non troppo",
+	  "Marche Radetsky",
+	  "La Walkyrie, La chevauchÃ©e des Walkyries",
+	  "Toccata et fugue en rÃ© mineur",
+	  "Symphonie nÂ°5, Allegro con brio",
+	  "Rehab",
+	  "Jâ€™ai dix ans",
+	  "Maybellene",
+	  "The end has no end",
+	  "Yellow",
+	  "Minor swing",
+	  "Allons voir",
+	  "The Thrill is gone"
+    ];
+
+    const songs = auteur.map((artist, index) => ({
+      artist,
+      title: titre[index],
+      file: `${index + 1}.mp3`,
+      answer: `${artist} - ${titre[index]}`
+    }));
+
+    const state = {
+      order: [],
+      currentIndex: 0,
+      score: 0,
+      answered: false,
+      audioStartTime: 0
+    };
+
+    const audioPlayer = document.getElementById("audioPlayer");
+    const progressDom = document.getElementById("progress");
+    const scoreDom = document.getElementById("score");
+    const answersDom = document.getElementById("answers");
+    const quizForm = document.getElementById("quizForm");
+    const validateButton = document.getElementById("validate");
+    const nextButton = document.getElementById("next");
+    const restartButton = document.getElementById("restart");
+    const feedbackDom = document.getElementById("feedback");
+    const historyDom = document.getElementById("history");
+
+    function shuffle(items) {
+      const copy = [...items];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function getCurrentSong() {
+      return songs[state.order[state.currentIndex]];
+    }
+
+    function getChoices(song) {
+      const wrongAnswers = shuffle(songs.filter((candidate) => candidate !== song)).slice(0, 5);
+      return shuffle([song, ...wrongAnswers]);
+    }
+
+    function updateHeader() {
+      const played = Math.min(state.currentIndex + 1, songs.length);
+      progressDom.innerText = `${played} / ${songs.length}`;
+      scoreDom.innerText = `${state.score} ${state.score > 1 ? "points" : "point"}`;
+    }
+
+    function renderChoices(song) {
+      answersDom.innerHTML = "";
+      getChoices(song).forEach((choice, index) => {
+        const choiceId = `choice-${index}`;
+        const wrapper = document.createElement("label");
+        wrapper.className = "choice";
+        wrapper.setAttribute("for", choiceId);
+
+        const input = document.createElement("input");
+        input.type = "radio";
+        input.id = choiceId;
+        input.name = "answer";
+        input.value = choice.answer;
+        input.dataset.correct = String(choice === song);
+
+        const text = document.createElement("span");
+        text.innerText = choice.answer;
+
+        wrapper.append(input, text);
+        answersDom.appendChild(wrapper);
+      });
+    }
+
+    function loadQuestion({ autoplay = false } = {}) {
+      const song = getCurrentSong();
+      state.answered = false;
+      state.audioStartTime = 0;
+      audioPlayer.src = song.file;
+      audioPlayer.load();
+      if (autoplay) {
+        audioPlayer.play().catch(() => {
+          // The controls remain available if the browser blocks autoplay.
+        });
+      }
+      renderChoices(song);
+      updateHeader();
+      feedbackDom.innerText = "";
+      validateButton.hidden = false;
+      nextButton.hidden = true;
+      restartButton.hidden = true;
+    }
+
+    function markAnswer(selectedInput) {
+      const choices = [...answersDom.querySelectorAll(".choice")];
+      choices.forEach((choice) => {
+        const input = choice.querySelector("input");
+        input.disabled = true;
+        if (input.dataset.correct === "true") {
+          choice.classList.add("is-correct");
+        }
+      });
+
+      if (selectedInput.dataset.correct === "true") {
+        state.score += 1;
+        feedbackDom.innerText = "Bonne rÃ©ponse !";
+        addHistoryDot(true);
+      } else {
+        selectedInput.closest(".choice").classList.add("is-wrong");
+        feedbackDom.innerText = `RatÃ© : c'Ã©tait ${getCurrentSong().answer}.`;
+        addHistoryDot(false);
+      }
+
+      state.answered = true;
+      updateHeader();
+      validateButton.hidden = true;
+      nextButton.hidden = state.currentIndex === songs.length - 1;
+      restartButton.hidden = state.currentIndex !== songs.length - 1;
+
+      if (state.currentIndex === songs.length - 1) {
+        feedbackDom.innerText += ` Score final : ${state.score} / ${songs.length}.`;
+      }
+    }
+
+    function addHistoryDot(isCorrect) {
+      const dot = document.createElement("span");
+      dot.className = `history-dot ${isCorrect ? "correct" : "wrong"}`;
+      dot.title = isCorrect ? "Bonne rÃ©ponse" : "Mauvaise rÃ©ponse";
+      historyDom.appendChild(dot);
+    }
+
+    function nextQuestion() {
+      if (state.currentIndex < songs.length - 1) {
+        state.currentIndex += 1;
+        loadQuestion({ autoplay: true });
+      }
+    }
+
+    function restartQuiz() {
+      state.order = shuffle(songs.map((_, index) => index));
+      state.currentIndex = 0;
+      state.score = 0;
+      historyDom.innerHTML = "";
+      loadQuestion();
+    }
+
+    quizForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      if (state.answered) return;
+
+      const selectedInput = quizForm.querySelector("input[name='answer']:checked");
+      if (!selectedInput) {
+        feedbackDom.innerText = "Choisissez une rÃ©ponse avant de valider.";
+        return;
+      }
+
+      markAnswer(selectedInput);
+    });
+
+    nextButton.addEventListener("click", nextQuestion);
+    restartButton.addEventListener("click", restartQuiz);
+
+    audioPlayer.addEventListener("loadedmetadata", () => {
+      if (!Number.isFinite(audioPlayer.duration)) return;
+
+      state.audioStartTime = Math.random() * (audioPlayer.duration / 2);
+      audioPlayer.currentTime = state.audioStartTime;
+    });
+
+    audioPlayer.addEventListener("ended", () => {
+      audioPlayer.currentTime = state.audioStartTime;
+    });
+
+    restartQuiz();
+  </script>
 </body>
 </html>
-
-<!--
-1 - HAENDEL - Xerxe`s (aria Ombra mai fu) 
-2 - DVORAK - Symphonie n°9 - Mouvement 4 (Allegro con fuoco)
-3 - COUPERIN - Les Barricades Myste´rieuses 
-4 - PACHELBEL - Canon en Re´ majeur
-5 - BIZET - Carmen - ( Habanera _ L'amour est un oiseau rebelle)
-6 - BREL - Quand on na que l'Amour
-7 - MADONNA - Frozen
-8 - BACHELET - Les corons 
-9 - STROMAE - Carmen
-10- The Greatest Showman (musique de Benj Pasek et Justin Paul) - From Now On 
--->
