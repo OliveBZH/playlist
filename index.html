@@ -16,7 +16,10 @@
         </div>
         <div class="score-box">
           <span id="progress">1 / 10</span>
-          <strong id="score">0 point</strong>
+          <div class="score-summary">
+            <strong id="score">0 point</strong>
+            <strong id="totalTime" hidden></strong>
+          </div>
         </div>
       </header>
 
@@ -47,40 +50,40 @@
 
   <script>
     const auteur = [
-		"ALLEGRI", 
-		"FAURÉ", 
-		"GRIEG", 
-		"RACHMANINOV", 
-		"JOHANN STRAUSS", 
-		"WAGNER", 
-		"BACH", 
 		"BEETHOVEN", 
-		"AMY WINEHOUSE", 
-		"ALAIN SOUCHON", 
-		"CHUCK BERRY",
-		"THE STROKES",
-		"COLDPLAY",
-		"DJANGO REINHARDT",
-		"Feu! Chatterton",
-		"BB King"
+		"VERDI", 
+		"DVORAK", 
+		"BOCCHERINI", 
+		"MASSENET", 
+		"MOZART", 
+		"OFFENBACH", 
+		"BACH", 
+		"ARETHA FRANKLIN", 
+		"PINK FLOYD", 
+		"JIMI HENDRIX",
+		"THE DOORS",
+		"BRUCE SPRINGSTEEN",
+		"THE BEACH BOYS",
+		"JACQUES DUTRONC",
+		"NINO FERRER"
 	   ];
     const titre = [
-      "Miserere",
-	  "Requiem, Pie Jesu",
-	  "Peer Gynt, Dans l’antre du Roi de la montagne",
-	  "Symphonie n°1, Grave, Allegro ma non troppo",
-	  "Marche Radetsky",
-	  "La Walkyrie, La chevauchée des Walkyries",
-	  "Toccata et fugue en ré mineur",
-	  "Symphonie n°5, Allegro con brio",
-	  "Rehab",
-	  "J’ai dix ans",
-	  "Maybellene",
-	  "The end has no end",
-	  "Yellow",
-	  "Minor swing",
-	  "Allons voir",
-	  "The Thrill is gone"
+    "Sonate pour piano n°14 'Au clair de lune' (Adagio sostenuto)",
+	  "Le Trouvère (Choeur des Bohémiens)",
+	  "Symphonie n°9 'Du nouveau monde' (Allegro con fuoco)",
+	  "Quintette à cordes n°5 (Menuet)",
+	  "Thaïs (Méditation)",
+	  "Requiem (Lacrimosa)",
+	  "Les contes d'Hoffmann (Barcarolle)",
+	  "Le Clavier bien tempéré (Prélude)",
+	  "Think",
+	  "Another brick in the wall",
+	  "Voodoo Child",
+	  "Soul Kitchen",
+	  "Streets of Philadelphia",
+	  "Sloop John B.",
+	  "L’opportuniste",
+	  "La maison près de la fontaine"
     ];
 
     const songs = auteur.map((artist, index) => ({
@@ -95,12 +98,15 @@
       currentIndex: 0,
       score: 0,
       answered: false,
-      audioStartTime: 0
+      audioStartTime: 0,
+      questionStartedAt: 0,
+      answerTimes: []
     };
 
     const audioPlayer = document.getElementById("audioPlayer");
     const progressDom = document.getElementById("progress");
     const scoreDom = document.getElementById("score");
+    const totalTimeDom = document.getElementById("totalTime");
     const answersDom = document.getElementById("answers");
     const quizForm = document.getElementById("quizForm");
     const validateButton = document.getElementById("validate");
@@ -131,6 +137,14 @@
       const played = Math.min(state.currentIndex + 1, songs.length);
       progressDom.innerText = `${played} / ${songs.length}`;
       scoreDom.innerText = `${state.score} ${state.score > 1 ? "points" : "point"}`;
+    }
+
+    function formatTime(milliseconds) {
+      const totalSeconds = Math.round(milliseconds / 1000);
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+
+      return minutes > 0 ? `${minutes} min ${String(seconds).padStart(2, "0")} s` : `${seconds} s`;
     }
 
     function renderChoices(song) {
@@ -173,9 +187,11 @@
       validateButton.hidden = false;
       nextButton.hidden = true;
       restartButton.hidden = true;
+      state.questionStartedAt = performance.now();
     }
 
     function markAnswer(selectedInput) {
+      state.answerTimes[state.currentIndex] = performance.now() - state.questionStartedAt;
       const choices = [...answersDom.querySelectorAll(".choice")];
       choices.forEach((choice) => {
         const input = choice.querySelector("input");
@@ -202,6 +218,9 @@
       restartButton.hidden = state.currentIndex !== songs.length - 1;
 
       if (state.currentIndex === songs.length - 1) {
+        const totalTime = state.answerTimes.reduce((total, time) => total + time, 0);
+        totalTimeDom.innerText = `Temps : ${formatTime(totalTime)}`;
+        totalTimeDom.hidden = false;
         feedbackDom.innerText += ` Score final : ${state.score} / ${songs.length}.`;
       }
     }
@@ -224,6 +243,8 @@
       state.order = shuffle(songs.map((_, index) => index));
       state.currentIndex = 0;
       state.score = 0;
+      state.answerTimes = [];
+      totalTimeDom.hidden = true;
       historyDom.innerHTML = "";
       loadQuestion();
     }

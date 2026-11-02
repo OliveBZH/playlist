@@ -94,6 +94,17 @@ h1 {
   color: var(--accent-dark);
 }
 
+.score-summary {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 4px 12px;
+}
+
+.score-summary strong[hidden] {
+  display: none;
+}
+
 .player-panel {
   display: grid;
   gap: 12px;
@@ -256,6 +267,10 @@ button.secondary:hover {
   .score-box {
     width: 100%;
     text-align: left;
+  }
+
+  .score-summary {
+    justify-content: flex-start;
   }
 
   .actions button {
